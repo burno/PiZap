@@ -1,0 +1,67 @@
+### BEGIN INIT INFO
+# Provides: piradio
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Should-Start: $portmap
+# Should-Stop: $portmap
+# X-Start-Before: nis
+# X-Stop-After: nis
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# X-Interactive: true
+# Short-Description: Example initscript
+# Description: This file should be used to construct scripts to be placed in /etc/init.d.
+#
+### END INIT INFO
+
+#! /bin/sh
+# /etc/init.d/blah
+#
+
+# Some things that run always
+#touch /var/lock/piradio
+
+# Carry out specific functions when asked to by the system
+homedir=/mnt/HD_a2/scripts/piradio
+logfile=$homedir/piradiod.log
+if [ ! -f /opt ]; then
+ mkdir -p /opt
+ mount -o bind /mnt/HD_a2/ipkg/opt /opt
+ export PATH=/opt/bin:/opt/sbin:$PATH
+fi
+url=$2
+if [ "$url" = '' ]; then
+  url=http://pub1.di.fm:80/di_goapsy
+fi
+case "$1" in
+  start)
+    daemonpid=`pgrep piradiod`
+    if [ "$daemonpid" = '' ]; then
+      echo "Start daemon"
+      rm $homedir/nohup.out
+      sudo -u pi nohup $homedir/piradiod &
+    fi
+    already=`ps -eaf | grep $url | grep -v piradio.*start | grep -v grep | wc -l`
+    if [ "$already" != '0' ]; then
+      echo "Already recording $url"
+      exit
+    fi
+    srpid=`pgrep streamripper`
+    if [ "$srpid" != '' ]; then
+      echo "Stopping recording"
+      kill `pgrep streamripper`
+    fi
+    echo "Starting recording $url"
+    su nobody -c "/opt/bin/streamripper $url -d /mnt/HD_a2/Musique/rip --quiet -o larger 2>>$logfile 1>&2 &"
+    ;;
+  stop)
+    echo "Stopping recording"
+    kill `pgrep streamripper`
+    ;;
+  *)
+    echo "Usage: /etc/init.d/piradio {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

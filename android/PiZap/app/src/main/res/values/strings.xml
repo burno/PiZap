@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PiZap</string>
+    <string name="saved_hostname_key">com.blf.app.serverHostname</string>
+    <string name="saved_port_key">com.blf.app.serverPort</string>
+    <string name="saved_frequency_key">com.blf.app.transmitterFrequency</string>
+</resources>

@@ -1,0 +1,9 @@
+#!/bin/bash
+retcode=0
+while [ $retcode -eq 0 ]
+do
+#echo waiting for request
+nc -l -p 1234 -c /home/pi/handle_req.sh
+retcode=$?
+done
+

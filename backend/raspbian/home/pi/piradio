@@ -1,0 +1,66 @@
+### BEGIN INIT INFO
+# Provides: piradio
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Should-Start: $portmap
+# Should-Stop: $portmap
+# X-Start-Before: nis
+# X-Stop-After: nis
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# X-Interactive: true
+# Short-Description: Example initscript
+# Description: This file should be used to construct scripts to be placed in /etc/init.d.
+#
+### END INIT INFO
+
+#! /bin/sh
+# /etc/init.d/blah
+#
+
+# Some things that run always
+#touch /var/lock/piradio
+
+# Carry out specific functions when asked to by the system
+url=$2
+if [ "$url" = '' ]; then
+  url=http://pub1.di.fm:80/di_goapsy
+fi
+freq=$3
+if [ "$freq" = '' ]; then
+  freq=87.5
+fi
+case "$1" in
+  start)
+    daemonpid=`pgrep piradiod`
+    if [ "$daemonpid" = '' ]; then
+      echo "Start daemon"
+      rm /home/pi/nohup.out
+      sudo -u pi nohup /home/pi/piradiod &
+    fi
+    already=`ps -eaf | grep $url | grep -v grep | grep -v start | wc -l`
+    if [ "$already" != '0' ]; then
+      echo "Already listening $url"
+      exit
+    fi
+    soxpid=`pgrep sox`
+    if [ "$soxpid" != '' ]; then
+      echo "Stopping listening"
+      kill `pgrep RADIOMAISON`
+      kill `pgrep sox`
+    fi
+    echo "Starting listening $url"
+    sudo /home/pi/RADIOMAISON.sh $url $freq 1>>/tmp/listen.org 2>&1 &
+    ;;
+  stop)
+    echo "Stopping listening"
+    kill `pgrep RADIOMAISON`
+    kill `pgrep sox`
+    ;;
+  *)
+    echo "Usage: /etc/init.d/piradio {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
