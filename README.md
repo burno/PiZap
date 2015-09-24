@@ -1,19 +1,14 @@
 # PiZap
-Home Web Radio Emitter/Recorder
+Raspeberry Pi as a FM radio transmitter and ripper. Remote controled with Android phone.
 
-The project is made of 3 components:
+Little explanation:
+- the FM transmission was performed following this tutorial http://www.jacquet80.eu/blog/post/2014/04/Emetteur-FM-RDS-Raspberry-Pi
+It uses PiFmRds Git project and Sound eXchange (sox) linux tool to play the webradio stream to the FM band.
 
-- the Web Radio Emitter
-  * Hardware: Raspberry PI
-  * Software: Raspbian + shell scripts
-  
-  
-- the Web Radio Recorder
-  * Hardware: a DNS 323 NAS
-  * Software: BusyBox + shell scripts
-  
-  
-- the Remote Controller
-  * Hardware: my Android phone
-  * Software: custom made android app
-  
+- a shell daemon listens for http commands and send the commands to a linux service that start/stop the streaming
+
+- the android app sends http commands to the daemon:
+  * start/stop FM transmission
+  * choose url of webradio to listen to
+  * start/stop ripping
+  * manage list of webradios
