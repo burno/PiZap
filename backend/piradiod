@@ -1,0 +1,10 @@
+#!/bin/sh
+[ -z "$PIZAP_HOME" ] && echo set PIZAP_HOME path first && exit
+retcode=0
+while [ $retcode -eq 0 ]
+do
+#echo waiting for request
+nc -l -p 1234 -e $PIZAP_HOME/handle_req.sh
+retcode=$?
+done
+

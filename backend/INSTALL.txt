@@ -1,0 +1,47 @@
+
+Prerequisite
+============
+Install Raspian on the Pi:
+- download .img here : http://www.raspberrypi.org/downloads/
+- write the .img on SDCard with Win32DiskImager
+
+Update Raspian:
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+
+Get PiFmRDS software:
+sudo apt-get install make gcc git
+git clone https://github.com/ChristopheJacquet/PiFmRds.git
+
+Get sox, the stream reader:
+sudo apt-get install libsndfile1-dev
+sudo apt-get install libsox-fmt-mp3 sox
+
+Compile:
+cd PiFmRDS/src
+make
+
+Get netcat:
+sudo apt-get install netcat-traditional
+sudo update-alternatives --config nc
+
+Get streamripper:
+sudo apt-get install streamripper
+
+
+Install
+=======
+Get PiZap:
+cd ~/.
+git clone https://github.com/burno/PiZap.git
+cd PiZap
+
+Edit file configure.sh with correct values, then:
+./configure.sh
+
+Install piradio as a service.
+Edit file piradio, then:
+cp piradio /etc/init.d/piradio
+sudo update-rc.d piradio defaults
+

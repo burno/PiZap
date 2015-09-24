@@ -1,2 +1,0 @@
-sudo apt-get install netcat-traditional
-sudo update-alternatives --config nc

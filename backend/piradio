@@ -22,9 +22,20 @@
 #touch /var/lock/piradio
 
 # Carry out specific functions when asked to by the system
-homedir=/mnt/HD_a2/scripts/piradio
-logfile=$homedir/piradiod.log
-if [ ! -f /opt ]; then
+if [ -d /mnt/HD_a2/scripts/piradio ]; then
+  export PIZAP_HOME=/mnt/HD_a2/scripts/piradio
+elif [ -d /home/pi ]; then
+	export PIZAP_HOME=/home/pi
+else
+  exit
+fi
+if [ -d /mnt/HD_a2/Musique/rip ]; then
+  export RIP_OUTDIR=/mnt/HD_a2/Musique/rip
+else
+	export RIP_OUTDIR=/tmp
+fi
+logfile=$PIZAP_HOME/piradiod.log
+if [ ! -f /opt/bin ]; then
  mkdir -p /opt
  mount -o bind /mnt/HD_a2/ipkg/opt /opt
  export PATH=/opt/bin:/opt/sbin:$PATH
@@ -38,8 +49,8 @@ case "$1" in
     daemonpid=`pgrep piradiod`
     if [ "$daemonpid" = '' ]; then
       echo "Start daemon"
-      rm $homedir/nohup.out
-      sudo -u pi nohup $homedir/piradiod &
+      rm $PIZAP_HOME/nohup.out
+      sudo -u pi nohup $PIZAP_HOME/piradiod &
     fi
     already=`ps -eaf | grep $url | grep -v piradio.*start | grep -v grep | wc -l`
     if [ "$already" != '0' ]; then
@@ -52,7 +63,7 @@ case "$1" in
       kill `pgrep streamripper`
     fi
     echo "Starting recording $url"
-    su nobody -c "/opt/bin/streamripper $url -d /mnt/HD_a2/Musique/rip --quiet -o larger 2>>$logfile 1>&2 &"
+    su nobody -c "/opt/bin/streamripper $url -d $RIP_OUTDIR --quiet -o larger 2>>$logfile 1>&2 &"
     ;;
   stop)
     echo "Stopping recording"
